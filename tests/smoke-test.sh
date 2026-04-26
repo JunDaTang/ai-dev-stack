@@ -83,8 +83,24 @@ assert_contains ".gitignore" "*.key"
 assert_contains "README.md" "AI Coding Workstation"
 assert_contains "examples/config.example.env" "CLIPROXY_BASE_URL"
 assert_contains "examples/config.example.env" "[REDACTED]"
+assert_contains "examples/config.example.env" "MIHOMO_VERSION"
+assert_contains "examples/config.example.env" "MIHOMO_CONFIG_DIR"
+assert_contains "examples/config.example.env" "MIHOMO_BINARY_PATH"
+assert_contains "examples/config.example.env" "MIHOMO_SERVICE_NAME"
+assert_contains "examples/wsl.example.env" "MIHOMO_VERSION"
+assert_contains "examples/wsl.example.env" "MIHOMO_BINARY_PATH"
+assert_contains "examples/wsl.example.env" "MIHOMO_CONFIG_DIR"
+assert_contains "examples/wsl.example.env" "MIHOMO_CONFIG_PATH"
+assert_contains "examples/wsl.example.env" "MIHOMO_SERVICE_NAME"
 assert_contains "examples/wsl.example.env" "INSTALL_MIHOMO=0"
 assert_contains "examples/wsl.example.env" "INSTALL_CLIPROXYAPI=0"
+assert_contains "scripts/install-mihomo.sh" "MIHOMO_BINARY_PATH"
+assert_contains "scripts/install-mihomo.sh" "CLASH_SUBSCRIPTION_URL"
+assert_contains "scripts/install-mihomo.sh" "systemctl"
+assert_contains "templates/clash.service" "__MIHOMO_BINARY_PATH__"
+assert_contains "templates/clash.service" "__MIHOMO_CONFIG_DIR__"
+assert_contains "templates/clash.service" "__MIHOMO_CONFIG_PATH__"
+assert_contains "README.md" "MIHOMO_SERVICE_NAME"
 
 # Keep examples/template safe: no real-looking secrets committed.
 while IFS= read -r -d '' file; do
@@ -104,9 +120,9 @@ assert_contains "profiles/ubuntu-server.env" "INSTALL_CLIPROXYAPI=0"
 assert_contains "profiles/china-server.env" "INSTALL_MIHOMO=0"
 assert_contains "profiles/china-server.env" "INSTALL_CLIPROXYAPI=0"
 
-# Partial installers must report explicit skip status.
+# Partial installers must report explicit skip status unless implemented.
 assert_contains "scripts/common.sh" "[SKIP]"
-assert_contains "scripts/install-mihomo.sh" "skip \""
+assert_contains "scripts/install-mihomo.sh" "starting Mihomo installer"
 assert_contains "scripts/install-cliproxyapi.sh" "skip \""
 assert_contains "scripts/install-hermes.sh" "skip \""
 
@@ -115,6 +131,9 @@ bash install.sh --profile minimal --dry-run
 bash install.sh --profile wsl --dry-run
 bash install.sh --profile ubuntu-server --dry-run
 bash install.sh --profile china-server --dry-run
+mihomo_dry_run_output="$(INSTALL_MIHOMO=1 bash install.sh --profile wsl --dry-run 2>&1)"
+printf '%s\n' "$mihomo_dry_run_output"
+grep -Fq "starting Mihomo installer" <<< "$mihomo_dry_run_output" || fail "INSTALL_MIHOMO=1 override did not trigger Mihomo installer"
 bash install.sh doctor --dry-run
 
 ok "smoke test passed"

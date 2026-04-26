@@ -4,9 +4,11 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/mihomo -d /etc/mihomo
+Type=simple
+ExecStart=__MIHOMO_BINARY_PATH__ -d __MIHOMO_CONFIG_DIR__ -f __MIHOMO_CONFIG_PATH__
 Restart=on-failure
 RestartSec=3
+LimitNOFILE=500000
 
 [Install]
 WantedBy=multi-user.target

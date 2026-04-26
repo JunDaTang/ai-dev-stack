@@ -25,9 +25,9 @@ Dry-run first:
 ## Profiles
 
 - `minimal`: shell PATH, Claude Code, Codex, cc-switch.
-- `wsl`: minimal plus placeholders for future Mihomo/CLIProxyAPI automation; those components currently require manual setup.
-- `ubuntu-server`: server-oriented shell and CLI bootstrap; Mihomo/CLIProxyAPI remain manual for now.
-- `china-server`: server-oriented bootstrap with `USE_GITHUB_MIRROR=1`; Mihomo/CLIProxyAPI remain manual for now.
+- `wsl`: minimal plus optional Mihomo installer support when you set `INSTALL_MIHOMO=1` and provide a real `CLASH_SUBSCRIPTION_URL`; CLIProxyAPI remains manual for now.
+- `ubuntu-server`: server-oriented shell and CLI bootstrap; Mihomo/CLIProxyAPI remain manual by default.
+- `china-server`: server-oriented bootstrap with `USE_GITHUB_MIRROR=1`; Mihomo installer can reuse the same env knobs, while CLIProxyAPI remains manual for now.
 
 ## Safety
 
@@ -40,6 +40,32 @@ Dry-run first:
 The GitHub Actions workflow is tracked at `.github/workflows/ci.yml`.
 The same content is also available as a reusable template at `templates/github/ci.yml.example`.
 
+## Mihomo installer knobs
+
+When you want ai-dev-stack to provision Mihomo, set these in local `.env` and then enable `INSTALL_MIHOMO=1`:
+
+- `CLASH_SUBSCRIPTION_URL`: your real Mihomo/Clash subscription URL.
+- `MIHOMO_VERSION`: release tag to install, default `v1.19.24`.
+- `MIHOMO_BINARY_PATH`: install target, default `/usr/local/bin/mihomo`.
+- `MIHOMO_CONFIG_DIR`: runtime directory, default `$HOME/clashd`.
+- `MIHOMO_CONFIG_PATH`: config file path, default `$HOME/clashd/config.yaml`.
+- `MIHOMO_SERVICE_NAME`: systemd unit name, default `clash.service`.
+- `USE_GITHUB_MIRROR=1`: optional mirror mode for GitHub downloads.
+
+Dry-run preview:
+
+```sh
+INSTALL_MIHOMO=1 ./install.sh --profile wsl --dry-run
+```
+
+Real run on a safe machine:
+
+```sh
+INSTALL_MIHOMO=1 ./install.sh --profile wsl
+systemctl status clash.service
+mihomo -v
+```
+
 ## MVP status
 
-The first version focuses on safe skeleton, PATH fixes, Claude Code/Codex/cc-switch installers, and doctor checks. Mihomo, CLIProxyAPI, and Hermes installation are not automated yet; the repo now treats them as manual setup until portable installers are implemented.
+The repo now automates shell PATH fixes, Claude Code/Codex/cc-switch install, doctor checks, and a configurable Mihomo installer path. CLIProxyAPI and Hermes installation remain manual/setup-oriented until their portable installers are implemented.

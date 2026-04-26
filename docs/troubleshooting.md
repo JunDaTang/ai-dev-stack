@@ -16,6 +16,30 @@ which claude
 
 Expected paths should prefer `~/.hermes/node/bin` or another Linux-local directory.
 
+## Mihomo installer fails or stays manual
+
+Run a non-destructive preview first:
+
+```sh
+INSTALL_MIHOMO=1 ./install.sh --profile wsl --dry-run
+```
+
+Common causes:
+- `CLASH_SUBSCRIPTION_URL` is still `[REDACTED]` in `.env`.
+- `sudo` or `systemctl` is unavailable, so the service file cannot be installed/enabled.
+- `MIHOMO_BINARY_PATH` points to a non-Linux-local or unwritable path.
+- `USE_GITHUB_MIRROR=1` is needed for GitHub downloads from restricted networks.
+
+Real verification after install:
+
+```sh
+systemctl status clash.service
+mihomo -v
+curl -v --connect-timeout 5 -x http://127.0.0.1:7890 https://www.google.com
+```
+
+If you already have a working config, keep `MIHOMO_CONFIG_PATH` pointed at it and the installer will reuse or back it up instead of silently pretending success.
+
 ## CLIProxyAPI unreachable
 
 Run:

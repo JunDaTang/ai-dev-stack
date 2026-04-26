@@ -57,11 +57,24 @@ append_once() {
 
 load_env_file() {
   local env_file="$1"
+  local line key value
   [[ -f "$env_file" ]] || return 0
-  set -a
-  # shellcheck disable=SC1090
-  source "$env_file"
-  set +a
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ "$line" =~ ^[[:space:]]*$ ]] && continue
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+
+    if [[ "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+      key="${BASH_REMATCH[1]}"
+      value="${BASH_REMATCH[2]}"
+      if [[ -n ${!key+x} ]]; then
+        continue
+      fi
+      eval "export $key=$value"
+    else
+      warn "skipping unsupported env line in $env_file: $line"
+    fi
+  done < "$env_file"
 }
 
 is_wsl() {
