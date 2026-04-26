@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$ROOT_DIR/scripts/common.sh"
+
+CLIPROXY_BASE_URL="${CLIPROXY_BASE_URL:-http://127.0.0.1:8317}"
+log "CLIProxyAPI base URL: $CLIPROXY_BASE_URL"
+warn "MVP does not install CLIProxyAPI automatically yet; keep credentials in .env only."

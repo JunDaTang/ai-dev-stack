@@ -1,0 +1,15 @@
+# Local secrets and machine-specific config
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.token
+*.secret
+
+# Runtime/cache/logs
+.cache/
+logs/
+*.log
+backups/
+.DS_Store
