@@ -4,10 +4,12 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-WorkingDirectory=%h/cliproxyapi
-ExecStart=%h/cliproxyapi/cli-proxy-api --config %h/cliproxyapi/config.yaml
+Type=simple
+WorkingDirectory=__CLIPROXY_WORKDIR__
+ExecStart=__CLIPROXY_BINARY_PATH__ --config __CLIPROXY_CONFIG_PATH__
 Restart=on-failure
 RestartSec=3
+Environment=HOME=%h
 
 [Install]
 WantedBy=default.target

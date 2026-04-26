@@ -25,9 +25,9 @@ Dry-run first:
 ## Profiles
 
 - `minimal`: shell PATH, Claude Code, Codex, cc-switch.
-- `wsl`: minimal plus optional Mihomo installer support when you set `INSTALL_MIHOMO=1` and provide a real `CLASH_SUBSCRIPTION_URL`; CLIProxyAPI remains manual for now.
-- `ubuntu-server`: server-oriented shell and CLI bootstrap; Mihomo/CLIProxyAPI remain manual by default.
-- `china-server`: server-oriented bootstrap with `USE_GITHUB_MIRROR=1`; Mihomo installer can reuse the same env knobs, while CLIProxyAPI remains manual for now.
+- `wsl`: minimal plus optional Mihomo installer support when you set `INSTALL_MIHOMO=1` and provide a real `CLASH_SUBSCRIPTION_URL`; CLIProxyAPI can also be wired up from an existing local checkout when you set `INSTALL_CLIPROXYAPI=1`.
+- `ubuntu-server`: server-oriented shell and CLI bootstrap; Mihomo/CLIProxyAPI remain opt-in and expect an existing local CLIProxyAPI checkout.
+- `china-server`: server-oriented bootstrap with `USE_GITHUB_MIRROR=1`; Mihomo installer can reuse the same env knobs, and CLIProxyAPI can reuse the same local-checkout installer path.
 
 ## Safety
 
@@ -66,6 +66,31 @@ systemctl status clash.service
 mihomo -v
 ```
 
+## CLIProxyAPI installer knobs
+
+When you want ai-dev-stack to wire up an existing CLIProxyAPI checkout, set these in local `.env` and then enable `INSTALL_CLIPROXYAPI=1`:
+
+- `CLIPROXY_WORKDIR`: existing local checkout path, default `$HOME/cliproxyapi`.
+- `CLIPROXY_CONFIG_PATH`: config file to update, default `$HOME/cliproxyapi/config.yaml`.
+- `CLIPROXY_SERVICE_NAME`: user systemd unit name, default `cliproxyapi.service`.
+- `CLIPROXY_PROXY_URL`: proxy URL to write into config, default `http://127.0.0.1:7890`.
+- `CLIPROXY_PORT`: port to write into config, default `8317`.
+- `CLIPROXY_BASE_URL`: reachability check target, default `http://127.0.0.1:8317`.
+
+Dry-run preview:
+
+```sh
+INSTALL_CLIPROXYAPI=1 ./install.sh --profile wsl --dry-run
+```
+
+Real run on a safe machine:
+
+```sh
+INSTALL_CLIPROXYAPI=1 ./install.sh --profile wsl
+systemctl --user status cliproxyapi.service
+curl -v http://127.0.0.1:8317
+```
+
 ## MVP status
 
-The repo now automates shell PATH fixes, Claude Code/Codex/cc-switch install, doctor checks, and a configurable Mihomo installer path. CLIProxyAPI and Hermes installation remain manual/setup-oriented until their portable installers are implemented.
+The repo now automates shell PATH fixes, Claude Code/Codex/cc-switch install, doctor checks, a configurable Mihomo installer path, and CLIProxyAPI wiring for an existing local checkout. Hermes installation remains manual/setup-oriented until a portable installer is implemented.

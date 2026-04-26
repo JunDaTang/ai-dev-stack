@@ -40,6 +40,30 @@ curl -v --connect-timeout 5 -x http://127.0.0.1:7890 https://www.google.com
 
 If you already have a working config, keep `MIHOMO_CONFIG_PATH` pointed at it and the installer will reuse or back it up instead of silently pretending success.
 
+## CLIProxyAPI installer fails or service does not start
+
+Run a non-destructive preview first:
+
+```sh
+INSTALL_CLIPROXYAPI=1 ./install.sh --profile wsl --dry-run
+```
+
+Common causes:
+- `CLIPROXY_WORKDIR` does not point to an existing local checkout.
+- `CLIPROXY_CONFIG_PATH` is missing.
+- `CLIPROXY_WORKDIR/cli-proxy-api` is not executable.
+- `systemctl --user` is unavailable or the user service manager is not running.
+- `CLIPROXY_PROXY_URL` or `CLIPROXY_PORT` is inconsistent with the intended deployment.
+
+Real verification after install:
+
+```sh
+systemctl --user status cliproxyapi.service
+curl -v http://127.0.0.1:8317
+```
+
+The installer updates `proxy-url` and `port`, installs a user service unit, and then checks `CLIPROXY_BASE_URL`.
+
 ## CLIProxyAPI unreachable
 
 Run:
@@ -51,7 +75,7 @@ curl -v http://127.0.0.1:8317
 
 Check service status and `.env` `CLIPROXY_BASE_URL`.
 
-Note: ai-dev-stack does not auto-install CLIProxyAPI yet. Current support is manual deployment plus doctor/path checks.
+If you use the installer path, also verify `CLIPROXY_WORKDIR`, `CLIPROXY_CONFIG_PATH`, and `CLIPROXY_PROXY_URL`.
 
 ## Doctor warns about Windows shim paths
 

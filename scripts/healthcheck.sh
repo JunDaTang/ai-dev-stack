@@ -83,13 +83,38 @@ check_proxy_setting https.proxy
 check_placeholder_env CLASH_SUBSCRIPTION_URL
 check_placeholder_env CLIPROXY_API_KEY
 
+CLIPROXY_WORKDIR="${CLIPROXY_WORKDIR:-$HOME/cliproxyapi}"
+CLIPROXY_CONFIG_PATH="${CLIPROXY_CONFIG_PATH:-$CLIPROXY_WORKDIR/config.yaml}"
+CLIPROXY_SERVICE_NAME="${CLIPROXY_SERVICE_NAME:-cliproxyapi.service}"
 CLIPROXY_BASE_URL="${CLIPROXY_BASE_URL:-http://127.0.0.1:8317}"
+
+if [[ -d "$CLIPROXY_WORKDIR" ]]; then
+  echo "[OK] CLIProxyAPI workdir exists: $CLIPROXY_WORKDIR"
+else
+  echo "[WARN] CLIProxyAPI workdir missing: $CLIPROXY_WORKDIR"
+fi
+
+if [[ -f "$CLIPROXY_CONFIG_PATH" ]]; then
+  echo "[OK] CLIProxyAPI config exists: $CLIPROXY_CONFIG_PATH"
+else
+  echo "[WARN] CLIProxyAPI config missing: $CLIPROXY_CONFIG_PATH"
+fi
+
 if [[ "${DRY_RUN}" == "1" ]]; then
   log "would check CLIProxyAPI at $CLIPROXY_BASE_URL"
+  log "would check systemctl --user status $CLIPROXY_SERVICE_NAME"
 elif command -v curl >/dev/null 2>&1 && curl -fsS --max-time 3 "$CLIPROXY_BASE_URL" >/dev/null 2>&1; then
   echo "[OK] CLIProxyAPI reachable: $CLIPROXY_BASE_URL"
 else
   echo "[WARN] CLIProxyAPI not reachable: $CLIPROXY_BASE_URL"
+fi
+
+if [[ "${DRY_RUN}" != "1" ]] && need_cmd systemctl; then
+  if systemctl --user is-active --quiet "$CLIPROXY_SERVICE_NAME"; then
+    echo "[OK] CLIProxyAPI user service active: $CLIPROXY_SERVICE_NAME"
+  else
+    echo "[WARN] CLIProxyAPI user service not active: $CLIPROXY_SERVICE_NAME"
+  fi
 fi
 
 if is_wsl; then
