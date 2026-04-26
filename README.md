@@ -35,6 +35,11 @@ Dry-run first:
 - Existing config files are backed up under `~/.ai-dev-stack/backups/` before edits.
 - Scripts are intended to be idempotent: re-running should check existing tools first.
 
+## CI template
+
+A GitHub Actions workflow template is included at `templates/github/ci.yml.example`.
+Copy it to `.github/workflows/ci.yml` after your GitHub token has the `workflow` scope.
+
 ## MVP status
 
 The first version focuses on safe skeleton, PATH fixes, Claude Code/Codex/cc-switch installers, and doctor checks. Mihomo and CLIProxyAPI installers are conservative placeholders until service paths are made fully portable.
