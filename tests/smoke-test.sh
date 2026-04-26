@@ -154,7 +154,18 @@ bash install.sh --profile china-server --dry-run
 mihomo_dry_run_output="$(INSTALL_MIHOMO=1 bash install.sh --profile wsl --dry-run 2>&1)"
 printf '%s\n' "$mihomo_dry_run_output"
 grep -Fq "starting Mihomo installer" <<< "$mihomo_dry_run_output" || fail "INSTALL_MIHOMO=1 override did not trigger Mihomo installer"
-cliproxy_dry_run_output="$(INSTALL_CLIPROXYAPI=1 bash install.sh --profile wsl --dry-run 2>&1)"
+tmp_cliproxy_dir="$(mktemp -d)"
+trap 'rm -rf "$tmp_cliproxy_dir"' EXIT
+cat > "$tmp_cliproxy_dir/config.yaml" <<'EOF'
+proxy-url: "http://127.0.0.1:7890"
+port: "8317"
+EOF
+cat > "$tmp_cliproxy_dir/cli-proxy-api" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+chmod +x "$tmp_cliproxy_dir/cli-proxy-api"
+cliproxy_dry_run_output="$(CLIPROXY_WORKDIR="$tmp_cliproxy_dir" CLIPROXY_CONFIG_PATH="$tmp_cliproxy_dir/config.yaml" CLIPROXY_BINARY_PATH="$tmp_cliproxy_dir/cli-proxy-api" INSTALL_CLIPROXYAPI=1 bash install.sh --profile wsl --dry-run 2>&1)"
 printf '%s\n' "$cliproxy_dry_run_output"
 grep -Fq "starting CLIProxyAPI installer" <<< "$cliproxy_dry_run_output" || fail "INSTALL_CLIPROXYAPI=1 override did not trigger CLIProxyAPI installer"
 bash install.sh doctor --dry-run
