@@ -22,7 +22,10 @@ EOF
   chmod +x "$ENV_FILE"
 fi
 
-BLOCK='if [ -f "$HOME/.local/bin/env" ]; then . "$HOME/.local/bin/env"; fi'
+BLOCK=$(cat <<'EOF'
+if [ -f "$HOME/.local/bin/env" ]; then . "$HOME/.local/bin/env"; fi
+EOF
+)
 append_once "$HOME/.bashrc" "# ai-dev-stack PATH" "$BLOCK"
 append_once "$HOME/.profile" "# ai-dev-stack PATH" "$BLOCK"
 log "shell configured; run: source ~/.bashrc && hash -r"
