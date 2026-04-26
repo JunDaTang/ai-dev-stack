@@ -8,6 +8,6 @@ if need_cmd mihomo; then
   mihomo -v || true
   exit 0
 fi
-warn "Mihomo installer is intentionally conservative in MVP."
-warn "Set INSTALL_MIHOMO=1 only after reviewing docs; subscription URL stays in .env and must not be committed."
-log "recommended binary target: /usr/local/bin/mihomo; config: /etc/mihomo/config.yaml or ~/clashd/config.yaml"
+skip "Mihomo installer not implemented yet; configure manually for now."
+warn "Set INSTALL_MIHOMO=1 only after the installer is implemented and reviewed; subscription URL stays in .env and must not be committed."
+log "recommended manual target: /usr/local/bin/mihomo; config: /etc/mihomo/config.yaml or ~/clashd/config.yaml"

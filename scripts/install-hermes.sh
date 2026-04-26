@@ -7,5 +7,5 @@ if need_cmd hermes; then
   log "Hermes already available: $(command -v hermes)"
   exit 0
 fi
-warn "Hermes installation is environment-specific; MVP only checks/preserves PATH."
-log "If already installed under ~/.hermes, configure-shell.sh exposes ~/.hermes/node/bin."
+skip "Hermes installer is not implemented; this repo currently supports PATH integration only."
+log "If Hermes is already installed under ~/.hermes, configure-shell.sh exposes ~/.hermes/node/bin."

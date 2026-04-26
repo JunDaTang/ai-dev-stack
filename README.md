@@ -25,9 +25,9 @@ Dry-run first:
 ## Profiles
 
 - `minimal`: shell PATH, Claude Code, Codex, cc-switch.
-- `wsl`: minimal plus Mihomo/CLIProxyAPI hooks for WSL.
-- `ubuntu-server`: server-oriented hooks.
-- `china-server`: server profile with mirror/offline flags reserved.
+- `wsl`: minimal plus placeholders for future Mihomo/CLIProxyAPI automation; those components currently require manual setup.
+- `ubuntu-server`: server-oriented shell and CLI bootstrap; Mihomo/CLIProxyAPI remain manual for now.
+- `china-server`: server-oriented bootstrap with `USE_GITHUB_MIRROR=1`; Mihomo/CLIProxyAPI remain manual for now.
 
 ## Safety
 
@@ -42,4 +42,4 @@ The same content is also available as a reusable template at `templates/github/c
 
 ## MVP status
 
-The first version focuses on safe skeleton, PATH fixes, Claude Code/Codex/cc-switch installers, and doctor checks. Mihomo and CLIProxyAPI installers are conservative placeholders until service paths are made fully portable.
+The first version focuses on safe skeleton, PATH fixes, Claude Code/Codex/cc-switch installers, and doctor checks. Mihomo, CLIProxyAPI, and Hermes installation are not automated yet; the repo now treats them as manual setup until portable installers are implemented.

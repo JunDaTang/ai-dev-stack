@@ -26,3 +26,5 @@ curl -v http://127.0.0.1:8317
 ```
 
 Check service status and `.env` `CLIPROXY_BASE_URL`.
+
+Note: ai-dev-stack does not auto-install CLIProxyAPI yet. Current support is manual deployment plus doctor/path checks.

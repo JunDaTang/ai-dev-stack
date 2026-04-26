@@ -9,6 +9,7 @@ PROFILE="${PROFILE:-wsl}"
 log() { printf '[ai-dev-stack] %s\n' "$*"; }
 warn() { printf '[ai-dev-stack][WARN] %s\n' "$*" >&2; }
 err() { printf '[ai-dev-stack][ERROR] %s\n' "$*" >&2; }
+skip() { printf '[ai-dev-stack][SKIP] %s\n' "$*"; }
 
 run() {
   if [[ "${DRY_RUN}" == "1" ]]; then

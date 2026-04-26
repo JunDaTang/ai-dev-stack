@@ -89,8 +89,25 @@ done < <(find . -type f \
   -not -path './tests/smoke-test.sh' \
   -print0)
 
+# Profiles should not claim unfinished installers are enabled by default.
+assert_contains "profiles/wsl.env" "INSTALL_MIHOMO=0"
+assert_contains "profiles/wsl.env" "INSTALL_CLIPROXYAPI=0"
+assert_contains "profiles/ubuntu-server.env" "INSTALL_MIHOMO=0"
+assert_contains "profiles/ubuntu-server.env" "INSTALL_CLIPROXYAPI=0"
+assert_contains "profiles/china-server.env" "INSTALL_MIHOMO=0"
+assert_contains "profiles/china-server.env" "INSTALL_CLIPROXYAPI=0"
+
+# Partial installers must report explicit skip status.
+assert_contains "scripts/common.sh" "[SKIP]"
+assert_contains "scripts/install-mihomo.sh" "skip \""
+assert_contains "scripts/install-cliproxyapi.sh" "skip \""
+assert_contains "scripts/install-hermes.sh" "skip \""
+
 # Dry-run should not mutate system and must complete.
 bash install.sh --profile minimal --dry-run
+bash install.sh --profile wsl --dry-run
+bash install.sh --profile ubuntu-server --dry-run
+bash install.sh --profile china-server --dry-run
 bash install.sh doctor --dry-run
 
 ok "smoke test passed"
