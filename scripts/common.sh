@@ -55,6 +55,10 @@ append_once() {
   fi
 }
 
+# Save the original environment to distinguish parent-shell vars from
+# vars loaded by load_env_file calls.
+_ORIG_ENV_SNAPSHOT="$(export -p 2>/dev/null || true)"
+
 load_env_file() {
   local env_file="$1"
   local line key value
@@ -67,9 +71,12 @@ load_env_file() {
     if [[ "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
       key="${BASH_REMATCH[1]}"
       value="${BASH_REMATCH[2]}"
-      if [[ -n ${!key+x} ]]; then
+
+      # Skip if variable was set by the parent shell (user env overrides everything)
+      if [[ -n ${!key+x} ]] && (echo "$_ORIG_ENV_SNAPSHOT" | grep -qE "^(export|declare -x) ${key}="); then
         continue
       fi
+
       eval "export $key=$value"
     else
       warn "skipping unsupported env line in $env_file: $line"

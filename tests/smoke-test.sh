@@ -129,6 +129,7 @@ while IFS= read -r -d '' file; do
   assert_not_contains_regex "$file" 'api[_-]?key=[A-Za-z0-9_-]{16,}'
 done < <(find . -type f \
   -not -path './.git/*' \
+  -not -path './.env' \
   -not -path './tests/smoke-test.sh' \
   -print0)
 

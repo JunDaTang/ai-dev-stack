@@ -46,9 +46,57 @@ resolve_download_url() {
   arch="$(resolve_arch)"
   url="https://github.com/MetaCubeX/mihomo/releases/download/${MIHOMO_VERSION}/mihomo-linux-${arch}-${MIHOMO_VERSION}.gz"
   if [[ "${USE_GITHUB_MIRROR:-0}" == "1" ]]; then
-    url="https://ghproxy.com/${url}"
+    url="https://ghproxy.net/${url}"
   fi
   printf '%s\n' "$url"
+}
+
+# Download from URL with multiple fallback sources
+download_with_fallback() {
+  local dest="$1" desc="$2"
+  shift 2
+  local urls=("$@")
+  local tmp_file
+
+  tmp_file="$(mktemp)"
+  for url in "${urls[@]}"; do
+    log "trying to download ${desc} from ${url}"
+    if curl -fsSL --connect-timeout 15 --max-time 90 "$url" -o "$tmp_file" 2>/dev/null; then
+      mv "$tmp_file" "$dest"
+      log "downloaded ${desc} successfully"
+      return 0
+    fi
+    log "failed to download ${desc} from ${url}"
+  done
+  rm -f "$tmp_file"
+  return 1
+}
+
+# Pre-download MMDB and GeoSite so Mihomo doesn't fail on first start
+ensure_mmdb_geosite() {
+  local mmdb_path="${MIHOMO_CONFIG_DIR}/geoip.metadb"
+  local geosite_path="${MIHOMO_CONFIG_DIR}/geosite.dat"
+  local arch="${MIHOMO_MMDB_ARCH:-release}"  # release or prerelease
+
+  ensure_dir "$MIHOMO_CONFIG_DIR"
+
+  if [[ ! -f "$mmdb_path" ]]; then
+    download_with_fallback "$mmdb_path" "MMDB" \
+      "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@${arch}/geoip.metadb" \
+      "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@${arch}/geoip.metadb" \
+      "https://github.com/MetaCubeX/meta-rules-dat/raw/${arch}/geoip.metadb" \
+      "https://ghproxy.net/https://github.com/MetaCubeX/meta-rules-dat/raw/${arch}/geoip.metadb" \
+    || warn "MMDB download failed; Mihomo will auto-download on start"
+  fi
+
+  if [[ ! -f "$geosite_path" ]]; then
+    download_with_fallback "$geosite_path" "GeoSite" \
+      "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@${arch}/geosite.dat" \
+      "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@${arch}/geosite.dat" \
+      "https://github.com/MetaCubeX/meta-rules-dat/raw/${arch}/geosite.dat" \
+      "https://ghproxy.net/https://github.com/MetaCubeX/meta-rules-dat/raw/${arch}/geosite.dat" \
+    || warn "GeoSite download failed; Mihomo will auto-download on start"
+  fi
 }
 
 install_binary() {
@@ -73,7 +121,12 @@ install_binary() {
   tmp_dir="$(mktemp -d)"
   archive="$tmp_dir/mihomo.gz"
   extracted="$tmp_dir/mihomo"
-  curl -fsSL "$url" -o "$archive"
+
+  if ! download_with_fallback "$archive" "Mihomo binary" "$url"; then
+    err "Mihomo binary download failed from all sources"
+    exit 1
+  fi
+
   gunzip -c "$archive" > "$extracted"
   chmod +x "$extracted"
   as_root install -Dm755 "$extracted" "$MIHOMO_BINARY_PATH"
@@ -154,6 +207,7 @@ log "service name: $MIHOMO_SERVICE_NAME"
 
 install_binary
 install_config
+ensure_mmdb_geosite
 install_service
 
 log "Mihomo installer finished"

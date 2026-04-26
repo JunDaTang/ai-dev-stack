@@ -34,7 +34,7 @@ Still not fully automated:
 ## Quick start
 
 ```sh
-git clone https://github.com/JedTang/ai-dev-stack.git
+git clone https://github.com/JunDaTang/ai-dev-stack.git
 cd ai-dev-stack
 cp examples/config.example.env .env
 # edit .env and keep secrets local
