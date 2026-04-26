@@ -35,10 +35,10 @@ Dry-run first:
 - Existing config files are backed up under `~/.ai-dev-stack/backups/` before edits.
 - Scripts are intended to be idempotent: re-running should check existing tools first.
 
-## CI template
+## CI
 
-A GitHub Actions workflow template is included at `templates/github/ci.yml.example`.
-Copy it to `.github/workflows/ci.yml` after your GitHub token has the `workflow` scope.
+The GitHub Actions workflow is tracked at `.github/workflows/ci.yml`.
+The same content is also available as a reusable template at `templates/github/ci.yml.example`.
 
 ## MVP status
 
