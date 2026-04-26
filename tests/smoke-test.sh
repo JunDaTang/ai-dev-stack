@@ -73,11 +73,18 @@ assert_contains "scripts/common.sh" "DRY_RUN"
 assert_contains "scripts/common.sh" "backup_file"
 assert_contains "scripts/configure-shell.sh" "/.hermes/node/bin"
 assert_contains "scripts/healthcheck.sh" "CLIProxyAPI"
+assert_contains "scripts/healthcheck.sh" "gh auth status"
+assert_contains "scripts/healthcheck.sh" "http.proxy"
+assert_contains "scripts/healthcheck.sh" "https.proxy"
+assert_contains "scripts/healthcheck.sh" "[REDACTED]"
+assert_contains "scripts/healthcheck.sh" "Windows shim"
 assert_contains ".gitignore" ".env"
 assert_contains ".gitignore" "*.key"
 assert_contains "README.md" "AI Coding Workstation"
 assert_contains "examples/config.example.env" "CLIPROXY_BASE_URL"
 assert_contains "examples/config.example.env" "[REDACTED]"
+assert_contains "examples/wsl.example.env" "INSTALL_MIHOMO=0"
+assert_contains "examples/wsl.example.env" "INSTALL_CLIPROXYAPI=0"
 
 # Keep examples/template safe: no real-looking secrets committed.
 while IFS= read -r -d '' file; do
